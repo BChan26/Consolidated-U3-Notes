@@ -75,6 +75,56 @@ You can start your live server with the `npm run dev` command in your terminal.
 
 From [u3_lesson_express_routing](https://github.com/SEIR-1003/u3_lesson_express_routing)
 
+In Express.js, routes are paths the user makes an HTTP for, such as GET `/` GET `/news` and so on. Upon making a request to a particular path, a handler function takes care of that particular request to create, update, read, or destroy information on a database.
+
+#### Building Routes and Handlers/Controllers
+
+Each HTTP request function (`get`, `post`, `put`, `delete`, etc) require two arguments. The first is a string representing the `url` or `endpoint` that we want to make the request to. The second argument is a function that provides a way to handle the specific request.
+
+This second argument, the handler function, works with two parameters: `req` and `res`.
+
+The `req` parameter conventionally represents the request being made and any information sent alongside the request. [Read about req](https://expressjs.com/en/api.html#req) in the Expressjs documentation.
+
+The `res` variable respresents the HTTP response from the server. [Read about res](https://expressjs.com/en/api.html#res) in the Expressjs documentation.
+
+#### Dynamic Endpoints
+
+The `request` object enables you to declare dynamic endpoints using parameters and queries.
+
+##### req.params
+
+Dynamic parameters can be appended to paths with a colon. These parameters can be named however you'd like but its worth considering semantic conventions.
+
+```
+app.get('/message/:id', (request, response) => {
+  console.log(`Getting a message with the id of ${request.params.id}`)
+  response.send({ msg: `Message with an id of ${request.params.id} found` })
+})
+```
+
+##### req.query
+
+Similarly, queries can be appended to the path with a question mark. Multiple queries are separated by ampersands. Example below:
+
+```
+localhost:3001/find?myName=Bob&myAge=23
+```
+
+Our path and handler function might look like this:
+
+```
+app.get('/find', (request, response) => {
+  console.log(
+    `Finding someone with a name of ${request.query.myName} and an age of ${request.query.myAge}`
+  )
+  response.send({
+    msg: `${request.query.myName} is ${request.query.myAge} years old.`
+  })
+})
+```
+
+Query's function in different way from `params` because we dont set any placeholders ahead of time. Instead this information is given when constructing the endpoint:
+
 ### Express Middleware
 
 From [u3_lesson_express_middleware](https://github.com/SEIR-1003/u3_lesson_express_middleware)

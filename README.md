@@ -123,11 +123,87 @@ app.get('/find', (request, response) => {
 })
 ```
 
-Query's function in different way from `params` because we dont set any placeholders ahead of time. Instead this information is given when constructing the endpoint:
+Query's function in different way from `params` because we dont set any placeholders ahead of time. Instead this information is given when constructing the request.
 
 ### Express Middleware
 
 From [u3_lesson_express_middleware](https://github.com/SEIR-1003/u3_lesson_express_middleware)
+
+#### What is Middleware?
+
+Middleware can be described as a function that run's in the middle of a request or before. From the Express documentation:
+
+> Middleware functions are functions that have access to the request object (req), the response object (res), and the next middleware function in the application’s request-response cycle. The next middleware function is commonly denoted by a variable named next.
+
+> Middleware functions can perform the following tasks:
+
+> - Execute any code.
+> - Make changes to the request and the response objects.
+> - End the request-response cycle.
+> - Call the next middleware function in the stack.
+
+#### CORS
+
+The [CORS](https://www.npmjs.com/package/cors) package enables cross origin resource sharing. It effectively enables you to determine how you handle requests that come from a different origin than where your data is stored. With CORS you can restrict access to information on a server from unpermitted origins or restrict actions like making delete requests.
+
+It works by passing headers in the response to a request that gives the browser information regarding what information or actions are permissible from the origin the request is made. 
+
+You can install CORS using `npm install cors`.
+
+After installing `cors` you need to require it in your app and have your app use it.
+
+```
+const express = require('express')
+// require cors middleware (this variable can be named anything)
+const corsMiddleware = require('cors')
+
+const app = express()
+//use cors
+app.use(cors())
+
+const PORT = process.env.PORT || 3001
+app.listen(PORT, () => {
+  console.log(`App listening on port: ${PORT}`)
+})
+```
+
+When we `use(cors())` without passing any parameters we're effectively allowing cross origin resource sharing regardless of the origin. This isn't necessarilly best practice but we are probably safe to use this for development. If you want to be more precise with configuring cors then you might consider passing acceptable origins.
+
+```
+app.use(cors({
+  origin: 'http://localhost:3000/',
+  optionsSuccessStatus: 200
+}))
+```
+
+[Refer to the CORS documentation](https://www.npmjs.com/package/cors) for detailed information on configuring cross origin resource sharing!
+
+#### next()
+
+`next()` is a function you can pass to middleware to tell it to move on to the next function in the middleware stack. Its worth noting that `next()` is not necessarily the same as `return` or `break` and any code following next will be executed after the following functions execute.
+
+Consider the following:
+
+```
+const demonstrator = (req, res, next) => {
+  console.log(1);
+  next();
+  console.log(3);
+}
+
+app.get('/count', demonstrator,(req, res) => {
+  console.log('2');
+})
+```
+
+In this example we have a `get` route set up on the path `/count`. When a request hits this endpoint, the functions passed into the route as parameters fire in order. First `demonstrator` fires and logs `1` before calling `next()`. Next an anonymous function runs and logs `2`. Finally, demonstrator finishes executing and logs `3`.
+
+In short, the function `demonstrator` is doing the following:
+
+1. Do something: `console.log(1)`
+2. Do the next thing: execute the body of an anonymous function that reads `console.log(2)`
+3. Do something after that: `console.log(3)`
+
 
 ### Express Controllers
 

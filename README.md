@@ -208,3 +208,7 @@ In short, the function `demonstrator` is doing the following:
 ### Express Controllers
 
 From [u3_lesson_express_controllers](https://github.com/SEIR-1003/u3_lesson_express_controllers)
+
+#### What is a controller?
+
+Controllers are methods that we create to handle how our server behaves during a request. They are in charge of sending back the requested information for a specific endpoint. We typically group them based on the actions that they perform and for the router that handles an endpoint or route. For example, if we have a router that handles all requests for a user ie. log in, register, profile etc.. We would create a controller to handle all of these endpoints. Our controller is a group of functions that will then handle the behavior for a specific endpoint.

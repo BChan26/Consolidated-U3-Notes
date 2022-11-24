@@ -6,6 +6,22 @@ The consolidation includes content pulled directly from previous repos, elaborat
 
 The primary scope of this repo is to serve as a hub/consolidation of lessons from unit 3 but not necessarily as an exhaustive resource for the technology featured.
 
+## Database Design
+
+From [u3_lesson_database_design](https://github.com/SEIR-1003/u3_lesson_database_design)
+
+Database design is one of the most important steps in building a robust backend service. How you store and associate data plays a big part in how well your application scales. With relational databases it's better to have more tables than not enough. Relational databases operate on a column/row approach, sort of like a spreadsheet. We associate different records utilizing a foreign key, which can be any kind of unique identifier; typically an id.
+
+### Types of relationships
+
+From [u3_lesson_ERD](https://github.com/SEIR-1003/u3_lesson_ERD)
+
+In the world of databases, there are many ways to relate data. The following is a list you might employ often:
+
+- one-to-one
+- one-to-many
+- many-to-many 
+
 ## Express
 
 [Go to expressjs.com](https://expressjs.com/) to read Official technical documentation for Express.js.
@@ -212,3 +228,155 @@ From [u3_lesson_express_controllers](https://github.com/SEIR-1003/u3_lesson_expr
 #### What is a controller?
 
 Controllers are methods that we create to handle how our server behaves during a request. They are in charge of sending back the requested information for a specific endpoint. We typically group them based on the actions that they perform and for the router that handles an endpoint or route. For example, if we have a router that handles all requests for a user ie. log in, register, profile etc.. We would create a controller to handle all of these endpoints. Our controller is a group of functions that will then handle the behavior for a specific endpoint.
+
+## Sequelize
+
+[Go to sequelize.org](https://sequelize.org/docs/v6/getting-started/) to read official technical documentation for sequelize.
+
+### Introduction to Sequelize
+
+From [u3_lesson_sequelize_intro](https://github.com/SEIR-1003/u3_lesson_sequelize_intro)
+
+#### What is Sequelize
+
+Sequelize is a JavaScript Object Relational Mapping tool! Its an abstraction layer for raw SQL. Instead of raw SQL we can use JavaScript to interact with our database.
+
+From the article [What is an ORM and Why You Should Use it](https://blog.bitsrc.io/what-is-an-orm-and-why-you-should-use-it-b2b6f75f5e2a):
+
+> Object-relational-mapping is the idea of being able to write queries like the one above, as well as much more complicated ones, using the object-oriented paradigm of your preferred programming language.
+
+#### Getting Started
+
+##### Installation
+
+To install sequelize in your project you need to follow the following commands.
+
+```
+npm init -y
+npm install sequelize pg
+npm install -g sequelize-cli <--// You don't need to do this every time and everyone in this cohort has already done this. It installs sequelize CLI globally
+```
+
+##### Initialization
+
+Initialize a sequelize project
+```
+sequelize init
+```
+
+After executing this command in your project you should see a few folders a files generated for you:
+
+```
+- config
+- models
+- seeders
+```
+
+##### Configuration
+
+The config folder stores a `config.json` file where you can set your database name, username and password, and dialect. We're going to update this dialect to postgres. Example below:
+
+```
+{
+  "development": {
+    "username": "<your postgres username>",
+    "password": "<your postgres password>",
+    "database": "<your database name>_development",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "<your postgres username>",
+    "password": "<your postgres password>",
+    "database": "<your database name>_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "<your database name>_production",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}
+```
+
+NOTE: If you include sensitive information here then try to be mindful of how you handle commiting and pushing to github.
+
+#### Initializing a Database
+
+Instead of going into the postgres shell, you can initialize your databate through your terminal with the `sequelize db:create` command. This will create a database that matches the name of the database in your config file.
+
+#### Models
+
+From [sequelize.org](https://sequelize.org/docs/v6/core-concepts/model-basics/):
+
+> Models are the essence of Sequelize. A model is an abstraction that represents a table in your database. In Sequelize, it is a class that extends Model.
+
+> The model tells Sequelize several things about the entity it represents, such as the name of the table in the database and which columns it has (and their data types).
+
+> A model in Sequelize has a name. This name does not have to be the same name of the table it represents in the database. Usually, models have singular names (such as User) while tables have pluralized names (such as Users), although this is fully configurable.
+
+##### Generating Models
+
+You can generate models from the terminal using the following command.
+
+```
+sequelize model:generate --name <ModelName> --attributes <someKey>:<datatype>,<anotherKey>:<anotherDatatype>
+```
+
+Conventionally, your models should be `PascalCased` since they represent JavaScript classes and your attributes should be `camelCased` since they represent properties of that class.
+
+The command above will create two files. One file in the migrations folder and one file in the models folder.
+
+Here's an example model called `User`
+
+```
+'use strict'
+// require serialize to initialize our model class
+const { Model } = require('sequelize')
+
+// export a function that declares a class called "User" that extends
+//Model class and add association methods and columns as necessary
+// return User from this function after initialization
+module.exports = (sequelize, DataTypes) => {
+  class User extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+    }
+  }
+  // initialize model with these {columns} and {table configuration}
+  User.init(
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          isEmail: true
+        }
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false
+      }
+    },
+    {
+      sequelize,
+      modelName: 'User',
+      //by default sequelize pluralizes the model name. If you want a table called "users" instead of "Users" then you need to make it explicit below at time of initialization (and update the migration file before migrating changes)
+      tableName: 'users'
+    }
+  )
+  return User
+}
+
+```

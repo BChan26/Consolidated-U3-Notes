@@ -334,7 +334,7 @@ Here's an example model called `User`
 
 ```
 'use strict'
-// require serialize to initialize our model class
+// require Model class from sequalize
 const { Model } = require('sequelize')
 
 // export a function that declares a class called "User" that extends
@@ -350,7 +350,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
     }
   }
-  // initialize model with these {columns} and {table configuration}
+  // initialize model with these {columns},{table configuration}
   User.init(
     {
       name: {
@@ -372,7 +372,10 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'User',
-      //by default sequelize pluralizes the model name. If you want a table called "users" instead of "Users" then you need to make it explicit below at time of initialization (and update the migration file before migrating changes)
+      // by default sequelize pluralizes the model name. 
+      // If you want a table called "users" instead of "Users" then you
+      // need to make it explicit below at time of initialization (and
+      // update the migration file before migrating changes)
       tableName: 'users'
     }
   )

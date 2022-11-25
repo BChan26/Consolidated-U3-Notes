@@ -383,3 +383,45 @@ module.exports = (sequelize, DataTypes) => {
 }
 
 ```
+
+##### Migrations
+
+From [u3_lesson_sequelize_migrations](https://github.com/SEIR-1003/u3_lesson_sequelize_migrations)
+
+Migrations help us by keeping track of every change we performed to our database so that we can maintain data integrity and easy onboarding for other contributors.
+
+From [sequelize.org](https://sequelize.org/docs/v6/other-topics/migrations/):
+
+> You will need the Sequelize Command-Line Interface (CLI). The CLI ships support for migrations and project bootstrapping.
+
+> A Migration in Sequelize is a javascript file which exports two functions, up and down, that dictates how to perform the migration and undo it. You define those functions manually, but you don't call them manually; they will be called automatically by the CLI. In these functions, you should simply perform whatever queries you need, with the help of sequelize.query and whichever other methods Sequelize provides to you. There is no extra magic beyond that.
+
+###### Using Migrations As Records
+
+Each migration file contains functions that determine what change occured during that migration. It could represent the creation or renaming of a table or column, updating associations and datatypes, or any other changes you might make to your tables.
+
+You can create a new migration file by running the following command:
+
+```
+sequelize migration:generate --name <semantic name of file that briefly describes change>
+
+ex:
+
+sequelize migration:generate --name add-username-to-users
+```
+
+A new file will generate in your migrations folder upon execution of this command. This file will match your specified file name with a date stamp prepended to it automatically.
+
+This file includes an `up` function representing the change you intend to make to the target table or column in addition to a `down` function that is effectively its inverse. Inside these functions we can update tables and columns utilitizing methods sequelize provides through the `queryInterface`.
+
+After writing your changes in these functions you need to migrate your changes to your database through the CLI with the command `sequelize db:migrate`. You will not see any changes in your table until you migrate.
+
+NOTE: This command will also create a table called `SequelizeMeta` in your database and populate it with a log of migrations.
+
+##### Query Interface
+
+From [sequelize.org](https://sequelize.org/docs/v6/other-topics/query-interface/):
+
+> An instance of Sequelize uses something called Query Interface to communicate to the database in a dialect-agnostic way. Most of the methods you've learned in this manual are implemented with the help of several methods from the query interface.
+
+The methods from the query interface enable users to add columns, bulk delete records, bulk insert records, change columns, and more. [Reference the sequelize docs](https://sequelize.org/api/v6/class/src/dialects/abstract/query-interface.js~queryinterface) for an exhaustive list of `queryInterface` methods.

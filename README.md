@@ -384,7 +384,7 @@ module.exports = (sequelize, DataTypes) => {
 
 ```
 
-##### Migrations
+#### Migrations
 
 From [u3_lesson_sequelize_migrations](https://github.com/SEIR-1003/u3_lesson_sequelize_migrations)
 

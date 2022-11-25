@@ -1,10 +1,8 @@
 # Consolidated-U3-Notes
 
-The purpose of this repo is merely to consolidate lesson repos for unit 3 into one repository. 
-
-The consolidation includes content pulled directly from previous repos, elaborations from primary documentation, and rewording for my own benefit and understanding. It excludes follow-along excersizes but links to the original lessons if you need a refresher and want to follow along.
-
 The primary scope of this repo is to serve as a hub/consolidation of lessons from unit 3 but not necessarily as an exhaustive resource for the technology featured.
+
+The consolidation includes content pulled directly from previous repos, elaborations from primary documentation, and rewording for my own benefit and understanding. It excludes follow-along excersizes but links to the original lessons and external documentation.
 
 ## Database Design
 
@@ -426,6 +424,67 @@ From [sequelize.org](https://sequelize.org/docs/v6/other-topics/query-interface/
 
 The methods from the query interface enable users to add columns, bulk delete records, bulk insert records, change columns, and more. [Reference the sequelize docs](https://sequelize.org/api/v6/class/src/dialects/abstract/query-interface.js~queryinterface) for an exhaustive list of `queryInterface` methods.
 
+### Associations
+
+From [u3_lesson_sequelize_associations](https://github.com/SEIR-1003/u3_lesson_sequelize_associations)
+
+Associations are the relationships that we define between different data entries accross different tables. For example:
+
+- A user can `have many` pets
+- Pets `belong to` one user
+
+Relational databases rely on associations in order to join data that we need in a an organized manner. It also helps reduce database load. Databases can become overwhelmed when being queried repeatedly in a short amount of time. By joining data, we can load all of the data we need with one query.
+
+#### Sequelize Association Methods
+
+Sequelize supports one-to-one, one-to-many, and many-to-many relationships. Sequelize models have built in methods to handle these associations: `hasOne`, `hasMany`, `BelongsTo`, and `BelongsToMany`. You can add these within the `static associate` brackets of your model. For example:
+
+```
+class User extends Model {
+  static associate(models) {
+    User.hasMany(models.User, { foreignKey: 'userId' })
+  }
+}
+```
+
+If one user can have many tasks we simply associate them within this section by called the `hasMany` method and passing an object detailing how to associate them. The foreignKey we'll use to associate them is a column we'll call userId.
+
+Each association method works this exact way. The first parameter is the Model you want to associate and the second parameter is an options object representing details regarding the association.
+
+If each task is assigned to only one user then we can say it belong to that particular user using the `belongsTo` method on the Task model. Then we'll add our association as a column on the model initialization in addition to the migration file.
+
+```
+class Task extends Model {
+  static associate(models) {
+    Task.belongTo(models.User, { foreignKey: 'userId' })
+  }
+}
+Task.init(
+  {
+    title: DataTypes.STRING,
+    userId: {
+      type: DataTypes.INTEGER,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'users',
+        key: 'id'
+      }
+    }
+  },
+  {
+    sequelize,
+    modelName: 'Task',
+    tableName: 'tasks'
+  }
+)
+```
+
+#### Associations options
+
+From [sequelize.org](https://sequelize.org/docs/v6/core-concepts/assocs/#options)
+
+As we saw in the last example, various options can be passed through the options object in the second parameter of the association call. We passed one property in our association options object: a `foreignKey`. After that we added more column options to the initialization and migration manually (`onDelete`, `type`, `references`, etc.)
+
 ### Sequelize Queries
 
 From [u3_lesson_sequelize_queries-1](https://github.com/SEIR-1003/u3_lesson_sequelize_queries-1).
@@ -434,7 +493,7 @@ When we define our Sequelize models, you'll notice that the model defined inheri
 
 Note: Not all queries return the result formatted as you'd expect, make sure to check how the result is formatted!
 
-Read the sequelize docs for [basic queries](https://sequelize.org/docs/v6/core-concepts/model-querying-basics/).
+Read the sequelize docs for [basic queries](https://sequelize.org/docs/v6/core-concepts/model-querying-basics/) and [querying associated models](https://sequelize.org/docs/v6/core-concepts/assocs/#basics-of-queries-involving-associations)
 
 #### Raw Queries
 
@@ -450,4 +509,3 @@ Example:
 const [results, metadata] = await sequelize.query("UPDATE users SET y = 42 WHERE x = 12");
 // Results will be an empty array and metadata will contain the number of affected rows.
 ```
-

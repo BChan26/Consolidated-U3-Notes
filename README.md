@@ -308,7 +308,7 @@ NOTE: If you include sensitive information here then try to be mindful of how yo
 
 Instead of going into the postgres shell, you can initialize your databate through your terminal with the `sequelize db:create` command. This will create a database that matches the name of the database in your config file.
 
-#### Models
+### Models
 
 From [sequelize.org](https://sequelize.org/docs/v6/core-concepts/model-basics/):
 
@@ -318,7 +318,7 @@ From [sequelize.org](https://sequelize.org/docs/v6/core-concepts/model-basics/):
 
 > A model in Sequelize has a name. This name does not have to be the same name of the table it represents in the database. Usually, models have singular names (such as User) while tables have pluralized names (such as Users), although this is fully configurable.
 
-##### Generating Models
+#### Generating Models
 
 You can generate models from the terminal using the following command.
 
@@ -384,7 +384,7 @@ module.exports = (sequelize, DataTypes) => {
 
 ```
 
-#### Migrations
+### Migrations
 
 From [u3_lesson_sequelize_migrations](https://github.com/SEIR-1003/u3_lesson_sequelize_migrations)
 
@@ -396,7 +396,7 @@ From [sequelize.org](https://sequelize.org/docs/v6/other-topics/migrations/):
 
 > A Migration in Sequelize is a javascript file which exports two functions, up and down, that dictates how to perform the migration and undo it. You define those functions manually, but you don't call them manually; they will be called automatically by the CLI. In these functions, you should simply perform whatever queries you need, with the help of sequelize.query and whichever other methods Sequelize provides to you. There is no extra magic beyond that.
 
-###### Using Migrations As Records
+#### Using Migrations As Records
 
 Each migration file contains functions that determine what change occured during that migration. It could represent the creation or renaming of a table or column, updating associations and datatypes, or any other changes you might make to your tables.
 
@@ -418,10 +418,36 @@ After writing your changes in these functions you need to migrate your changes t
 
 NOTE: This command will also create a table called `SequelizeMeta` in your database and populate it with a log of migrations.
 
-##### Query Interface
+#### Query Interface
 
 From [sequelize.org](https://sequelize.org/docs/v6/other-topics/query-interface/):
 
 > An instance of Sequelize uses something called Query Interface to communicate to the database in a dialect-agnostic way. Most of the methods you've learned in this manual are implemented with the help of several methods from the query interface.
 
 The methods from the query interface enable users to add columns, bulk delete records, bulk insert records, change columns, and more. [Reference the sequelize docs](https://sequelize.org/api/v6/class/src/dialects/abstract/query-interface.js~queryinterface) for an exhaustive list of `queryInterface` methods.
+
+### Sequelize Queries
+
+From [u3_lesson_sequelize_queries-1](https://github.com/SEIR-1003/u3_lesson_sequelize_queries-1).
+
+When we define our Sequelize models, you'll notice that the model defined inherites from the `Model` class provided by Sequelize. This model class has methods and attributes built in to query or manipulate any model that we create. When we invoke these functions, Sequelize executes some SQL query to retrieve the desired information from our database. The queries return a promise by default which means we must wait for them to finish by either using `async/await` or `.then().catch()`.
+
+Note: Not all queries return the result formatted as you'd expect, make sure to check how the result is formatted!
+
+Read the sequelize docs for [basic queries](https://sequelize.org/docs/v6/core-concepts/model-querying-basics/).
+
+#### Raw Queries
+
+From [sequelize.org](https://sequelize.org/docs/v6/core-concepts/raw-queries/):
+
+> As there are often use cases in which it is just easier to execute raw / already prepared SQL queries, you can use the sequelize.query method.
+
+> By default the function will return two arguments - a results array, and an object containing metadata (such as amount of affected rows, etc). Note that since this is a raw query, the metadata are dialect specific. Some dialects return the metadata "within" the results object (as properties on an array). However, two arguments will always be returned, but for MSSQL and MySQL it will be two references to the same object.
+
+Example:
+
+```
+const [results, metadata] = await sequelize.query("UPDATE users SET y = 42 WHERE x = 12");
+// Results will be an empty array and metadata will contain the number of affected rows.
+```
+
